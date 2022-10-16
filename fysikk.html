@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fysikk</title>
+    <style>
+        /*Stilen har som fokus å plassere elementene der de skal, position absolute på alt*/
+        body{
+             overflow: hidden;
+            background-color: lightblue;
+        }
+        #vekt {
+            position: absolute;
+            margin-top: 80px;
+        }
+        #vektTekst {
+            position: absolute;
+            margin-top: 60px;
+        }
+        #tyngdeKraft {
+            position: absolute;
+            margin-top: 140px;
+        }
+        #tyngdekraftTekst {
+            position: absolute;
+            margin-top: 120px;
+        }
+        #inpFart {
+            position: absolute;
+            margin-top: 200px;
+        }
+        #fartTekst {
+            position: absolute;
+            margin-top: 180px;
+        }
+        #fartInfo {
+            position: absolute;
+            margin-left: 900px;
+            margin-top: 60px;
+            font-size: 25px;
+        }
+        #newton {
+            position: absolute;
+            margin-left: 900px;
+            margin-top: 180px;
+            font-size: 25px;
+        }
+        #kinetisk {
+            position: absolute;
+            margin-left: 900px;
+            margin-top: 120px;
+            font-size: 25px;
+        }
+        #hoyesteEkTekst {
+            position: absolute;
+            margin-left: 900px;
+            margin-top: 148px;
+        }
+        #hoyesteFartTekst {
+            position: absolute;
+            margin-left: 900px;
+            margin-top: 88px;
+        }
+        h2 {
+            position: absolute;
+        }
+        canvas {
+            border: solid 3px brown;
+            margin-left: 33%;
+            margin-top: 2px;
+            position: absolute;
+        }
+        #luftmotstand {
+            position: absolute;
+            top: 300px;
+        }
+        #luftTekst {
+            position: absolute;
+            top: 284px;
+            left: 28px;
+        }
+        /*CSS FOR NAVIGASJONSBAREN*/
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #333;
+        }
+        li {
+            float: right;
+            border-left: 1px solid #bbb;
+        }
+        li a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+        li a:hover {
+            background-color: #111;
+        }
+        li:first-child {
+            background-color: #D60000;
+            float: left;
+        }
+    </style>
+</head>
+<body>
+
+    <ul><!--HTML for navigasjonsbaren-->
+        <li><a href="index.html">HJEM</a></li>
+        <li><a href="quiz.html">Biologi</a></li>
+        <li><a href="fysikk.html">Fysikk</a></li>
+        <li><a href="kjemi.html">Kjemi</a></li>
+    </ul>
+
+    <h2>Fysikk spill; Hopp og energiregning!</h2>
+
+    <!--HTML'en for alle input feltene og teksten, de refereres videre til i JS'en-->
+    <p id="vektTekst">Velg vekten av firkanten i Kg</p>
+    <input type="number" id="vekt" min="0">
+    <p id="tyngdekraftTekst">Velg styrken av tyngdeaksellerasjonen i m/s^2</p>
+    <input type="number" id="tyngdeKraft" min="0">
+    <p id="fartTekst">Velg startfarten til firkanten i m/s</p>
+    <input type="number" id="inpFart" min="0">
+
+    <p id="luftTekst">Huk av for å bruke luftmotstand</p>
+    <input type="checkbox" id="luftmotstand">
+
+
+    <p id="fartInfo">Farten til firkanten er:</p>
+    <p id="newton">Tyngdekraften er på ?N</p>
+    <p id="kinetisk">Firkanten sin kinetiske energi er ?J</p>
+    <p id="hoyesteFartTekst"></p>
+    <p id="hoyesteEkTekst"></p>
+
+    <canvas id="canvas" width="400px" height="500px"></canvas>
+
+    <script>
+
+        //Referanser til HTML element
+        let inpVekt = document.querySelector("#vekt");
+        let inpTyngdekraft = document.querySelector("#tyngdeKraft");
+        let inpFart = document.querySelector("#inpFart");
+        let fartInfo = document.querySelector("#fartInfo");
+        let hoyesteFartTekst = document.querySelector("#hoyesteFartTekst");
+        let newton = document.querySelector("#newton");
+        let kinetisk = document.querySelector("#kinetisk");
+        let hoyesteEkTekst = document.querySelector("#hoyesteEkTekst");
+        let luftmotstand = document.querySelector("#luftmotstand");
+        let canvas = document.querySelector("#canvas");
+        let ctx = canvas.getContext("2d");
+
+
+        //Globale variabler
+        let firkant = {//Objektet til firkanten som innehaver all basisinfoen som senere kan endres
+            "bredde": 50,
+            "hoyde": 50,
+            "farge": "red",
+            "xpos": 180,
+            "ypos": 450,
+            "yfart": 0,
+            "yretning": 0
+        };
+        let hoyesteFart = [];
+        let hoyesteEk = [];
+
+        //Hendelseslyttere
+        document.onkeydown = hopp;
+
+        //Gameloop
+        function gameLoop(){//Gameloopen forsikrer at alle disse funksjonene kjører 60fps om og om igjen
+        tegnFirkant();
+        sjekkKollisjon();
+        skrivFart();
+        skrivEnergi();
+            requestAnimationFrame(gameLoop);
+        }
+        gameLoop();
+
+        //Funksjonsbeskrivelser
+        function tegnFirkant(){//Denne koden tegner inn canvaset, samt firkanten
+            ctx.fillStyle = "Black";
+            ctx.fillRect(0, 0, 400, 500);
+            ctx.fillStyle = firkant.farge;
+            ctx.fillRect(firkant.xpos, firkant.ypos, firkant.bredde, firkant.hoyde);
+            firkant.ypos = firkant.ypos + (firkant.yretning * firkant.yfart);//Denne tegner firkanten på basis av hvor fort den beveger seg
+            let luftmotstandNewton = Math.pow(firkant.yfart, 2);
+            let luftmotstandAksellerasjon = luftmotstandNewton/inpVekt.value;
+            if (firkant.ypos !== 450){//Denne ifen sjekker at hoppet skjer, og aktiverer den negative aksellerasjonen
+                if (luftmotstand.checked === true){
+                    if (firkant.yfart > 0){
+                        firkant.yfart = firkant.yfart - (inpTyngdekraft.value/60) - (luftmotstandAksellerasjon/60);//Fungerer negativt på vei opp
+                    } else {
+                        firkant.yfart = firkant.yfart - (inpTyngdekraft.value/60) + (luftmotstandAksellerasjon/60);//Fungerer positivt på vei ned
+                    }
+                } else {
+                    firkant.yfart = firkant.yfart - (inpTyngdekraft.value/60);//Deler på 60 pga animationframes
+                }
+            }
+        }
+
+        function hopp(evt){//Dette er koden som hopper, aktiveres ved key 38, som er piltast opp
+            if (firkant.ypos === 450){//Kan bare hoppe fra startpunktet
+            let tallkode = evt.keyCode;
+            hoyesteEk = [];
+            hoyesteFart = [];
+            if (tallkode === 38){
+                    firkant.yfart = inpFart.value;
+                    firkant.yretning = -1;//Retning -1 fordi oppover er å senke y-verdien
+                }
+            }
+            regnNewton();
+        }
+        function sjekkKollisjon(){//Denne sjekker om firkanten har truffet startstreken
+            if (firkant.ypos > 450){//Sjekker om den har passert streken
+                firkant.yfart = 0;
+                firkant.yretning = 0;
+                firkant.ypos = 450;//Resetter alle verdiene for bevegelser og plasserer den på startstreken
+
+            }
+        }
+        function skrivFart(){
+            fartInfo.innerHTML = "Farten til firkanten i y-retning er: " + Math.round(firkant.yfart * 10) / 10 + "m/s";
+            hoyesteFart.push(firkant.yfart);
+            hoyesteFart.sort(function (a, b){return b-a});
+            hoyesteFartTekst.innerHTML = "Den høyeste farten i dette hoppet var " + Math.round(hoyesteFart[0]*10)/10 + "m/s";
+        }
+        function skrivEnergi(){
+            let Ek = (1/2)*inpVekt.value*Math.pow(firkant.yfart, 2);//Regner ut "Ek" altså kinetisk energi med formelen 1/2*mv^2
+            kinetisk.innerHTML = "Firkanten sin kinetiske energi er " + Math.round(Ek*10) / 10 + "J";
+            hoyesteEk.push(Ek);
+            hoyesteEk.sort(function (a, b){return b-a});
+            hoyesteEkTekst.innerHTML = "Den høyeste kinetiske energien i dette hoppet var " + Math.round(hoyesteEk[0]*10)/10 + "J";
+        }
+        function regnNewton(){
+            let G = inpVekt.value*inpTyngdekraft.value;
+            newton.innerHTML = "Tyngdekraften er på " + Math.round(G * 10) / 10 + "N";//Enkel fysisk formeg G = mg
+        }
+        //De små variasjonen i høyeste fart kommer av pc'en og requestanimationframe sine grenser for å ta opp info
+
+    </script>
+
+</body>
+</html>

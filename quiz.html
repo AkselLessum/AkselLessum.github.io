@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz</title>
+    <style>
+
+        /*CSS FOR NAVIGASJONSBAREN*/
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #333;
+        }
+        li {
+            float: right;
+            border-left: 1px solid #bbb;
+        }
+        li a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+        li a:hover {
+            background-color: #111;
+        }
+        li:first-child {
+            background-color: #D60000;
+            float: left;
+        }
+        body {
+            background-color: lightblue;
+            overflow-x: hidden;
+        }
+        .wrapper {
+            width: 100%;
+            margin-left: 10%;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-gap: 5px;
+        }
+        .svar {
+            border: solid 3px sienna;
+            border-radius: 5px;
+            padding: 2px;
+            text-align: center;
+            background-color: lightgray;
+            transition: 1.5s; /*Transition på her og spiller. Dette er fordi jeg ville ha fade ut men IKKE inn. Så div'en har en basis
+     av å ha transitions, men selve rød/grønnfargen har null transition. Dette er en workaround fordi transition ikke
+     funker normalt når fargen er basert på "onkeydown/up"*/
+        }
+        .bokstav {
+            font-size: 25px;
+            color: black;
+        }
+        .svarAlt{
+            color: black;
+            font-size: 18px;
+        }
+        #spm {
+            text-align: center;
+            font-size: 25px;
+            margin: 0;
+        }
+        img {
+            height: 300px;
+            width: 525px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            border: solid 7px sienna;
+            border-radius: 5px;
+        }
+        .spiller {
+            background-color: green;
+            transition: 0s;
+        }
+        .spiller2 {
+            background-color: red;
+            transition: 0s;
+        }
+        h2 {
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <ul>
+        <li><a href="index.html">HJEM</a></li>
+        <li><a href="quiz.html">Biologi</a></li>
+        <li><a href="fysikk.html">Fysikk</a></li>
+        <li><a href="kjemi.html">Kjemi</a></li>
+    </ul>
+
+
+<main>
+
+    <h2>BIOLOGI QUIZ</h2>
+    <br>
+    <div class="media"><!--DIV FOR BILDE OG VIDEO-->
+        <img id="bilde" src="Bildefiler/liger.jpg">
+    </div>
+    <br>
+    <div>
+        <p id="spm">Hva kalles barnet av en tiger og en løve?</p>
+    </div>
+    <br>
+    <div class="wrapper"><!--SVARALTERNATIVENE-->
+        <div class="svar" data-code="Digit1">
+            <div class="bokstav">1</div>
+            <p id="svarA" class="svarAlt">Liger</p>
+        </div>
+
+        <div class="svar" data-code="Digit2">
+            <div class="bokstav">2</div>
+            <p id="svarB" class="svarAlt">Tøve</p>
+        </div>
+
+        <div class="svar" data-code="Digit3">
+            <div class="bokstav">3</div>
+            <p id="svarC" class="svarAlt">Løger</p>
+        </div>
+
+        <div class="svar" data-code="Digit4">
+            <div class="bokstav">4</div>
+            <p id="svarD" class="svarAlt">Tion</p>
+        </div>
+    </div>
+
+
+</main>
+<br>
+
+    <script>
+
+        //Referanser til HTML element
+        let sporsmal = document.getElementById("spm");
+        let svarA = document.getElementById("svarA");
+        let svarB = document.getElementById("svarB");
+        let svarC = document.getElementById("svarC");
+        let svarD = document.getElementById("svarD");
+        let bilde = document.getElementById("bilde");
+        let lyd = document.getElementById("lyd");
+
+        //Globale variabler
+        let i = 0;
+        let feil = 0;
+        let score = 0;
+        let spmArray= [];
+
+        //Class constructor og objekter
+        class spm {
+            constructor(spm, riktigAlt, feilAlt1, feilAlt2, feilAlt3, alt1, alt2, alt3, alt4, bilde){
+                this.spm = spm;
+                this.riktigAlt = riktigAlt;
+                this.feilAlt1 = feilAlt1;
+                this.feilAlt2 = feilAlt2;
+                this.feilAlt3 = feilAlt3;
+                this.alt1 = alt1;
+                this.alt2 = alt2;
+                this.alt3 = alt3;
+                this.alt4 = alt4;
+                this.bilde = bilde;
+            }
+        }
+        let spm1 = new spm("Hva kalles barnet av en tiger og en løve?", "Digit1", "Digit2", "Digit3", "Digit4", "Liger", "Tøve", "Løger", "Tion", "Bildefiler/liger.jpg");
+        spmArray.push(spm1);
+        let spm2 = new spm("Hvem er mest kjent for sitt arbeid med evolusjonsteorien?", "Digit3", "Digit2", "Digit1", "Digit4", "Marie Curie", "Einstein", "Charles Darwin", "Robspierre", "Bildefiler/evolution.jpg" );
+        spmArray.push(spm2);
+        let spm3 = new spm("Hva er forkortelsen for den energipakken celler bruker i transport av stoffer?", "Digit2", "Digit1", "Digit3", "Digit4", "RNA", "ATP", "DNA", "NKP", "Bildefiler/ATP.png");
+        spmArray.push(spm3);
+        let spm4 = new spm("Hvor foregår transpirasjon hos planter?", "Digit1", "Digit2", "Digit3", "Digit4", "I bladene", "I roten", "Rundt den", "I klorofyllet", "Bildefiler/tre.jpg");
+        spmArray.push(spm4);
+        let spm5 = new spm("Siste spørsmål: Er haier pattedyr?", "Digit4", "Digit2", "Digit3", "Digit1", "Ja", "De fleste", "De færreste", "Nei, de er fisker", "Bildefiler/hai.jpg");
+        spmArray.push(spm5);
+        //Contructoren la opp parameterne for ethvert spørsmål, så det blir lettere å skrive spørsmålene inn her
+        //Jeg pusher dem så inn i et tomt array for å lettere kunne referere til indeksen deres
+
+        //Hendelseslyttere
+        window.onkeydown = mainFunc;
+        window.onkeyup = oppFunc;
+
+        //Funksjonsbeskrivelser
+        function mainFunc(event) {
+            if (event.code === spmArray[i].riktigAlt) {//Hvis event-coden er koden til riktig nummer tast
+                score++;
+                i++;
+                sporsmal.innerHTML = spmArray[i].spm;//Endrer teksten innad i spørsmålene til det spørsmålet med indeks=i
+                svarA.innerHTML = spmArray[i].alt1;
+                svarB.innerHTML = spmArray[i].alt2;
+                svarC.innerHTML = spmArray[i].alt3;
+                svarD.innerHTML = spmArray[i].alt4;
+
+                bilde = document.getElementById("bilde").src = spmArray[i].bilde;
+
+                const boks = document.querySelector(`div[data-code=${event.code}]`);
+                boks.classList.add("spiller");
+            } else if (event.code === spmArray[i].feilAlt1 || event.code === spmArray[i].feilAlt2 || event.code === spmArray[i].feilAlt3) {
+                i++;//Her sjekker vi i stedet for om noen av de 3 feil nummertastene er trykket, ALLE andre taster ignoreres
+                feil++;
+                sporsmal.innerHTML = spmArray[i].spm;
+                svarA.innerHTML = spmArray[i].alt1;
+                svarB.innerHTML = spmArray[i].alt2;
+                svarC.innerHTML = spmArray[i].alt3;
+                svarD.innerHTML = spmArray[i].alt4;
+
+                bilde = document.getElementById("bilde").src = spmArray[i].bilde;
+
+                const boks = document.querySelector(`div[data-code=${event.code}]`);//Disse legger til CSS atributter som lager animasjonen
+                boks.classList.add("spiller2");
+            }
+        }
+
+
+        function oppFunc(event){
+            if (i === 5) {
+                i++;
+                if (score < 5) {//Hvis du fikk mindre en alle riktig
+                    bilde = document.getElementById("bilde").src = "Bildefiler/dårlig.jpg";
+                    sporsmal.innerHTML = "Det var alle spørsmålene, du fikk " + score + " riktig og " + feil + " feil";
+                    svarA.innerHTML = "Bedre";
+                    svarB.innerHTML = "Lykke";
+                    svarC.innerHTML = "Neste";
+                    svarD.innerHTML = "Gang";
+
+
+                } else if (score === 5){
+                    bilde = document.getElementById("bilde").src = "Bildefiler/bra.jpg";
+                    sporsmal.innerHTML = "Du fikk alt riktig!";
+                    svarA.innerHTML = "Veldig";
+                    svarB.innerHTML = "Bra";
+                    svarC.innerHTML = "Jobbet";
+                    svarD.innerHTML = "!";
+                }
+            }
+
+            const boks = document.querySelector(`div[data-code=${event.code}]`);
+            boks.classList.remove("spiller");
+            boks.classList.remove("spiller2");//Når tasten går opp så fjernes CSS atributtene som ga dem grønn eller rød fargen
+        }
+
+
+    </script>
+</body>
+</html>

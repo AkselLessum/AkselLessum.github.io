@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kjemi</title>
+    <style>
+
+        /*CSS FOR NAVIGASJONSBAREN*/
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #333;
+        }
+        li {
+            float: right;
+            border-left: 1px solid #bbb;
+        }
+        li a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+        li a:hover {
+            background-color: #111;
+        }
+        li:first-child {
+            background-color: #D60000;
+            float: left;
+        }
+        h1 {
+            text-align: center;
+        }
+        body {
+            background-color: lightblue;
+        }
+        #stoffer {
+            border: solid 3px brown;
+            margin-left: 26%;
+            position: absolute;
+            width: 650px;
+            height: 315px;
+        }
+        #video {
+            border: solid 3px brown;
+            margin-left: 26%;
+            position: absolute;
+            width: 650px;
+            height: 315px;
+        }
+        #elektron1 {
+            position: absolute;
+            left: 450px;
+            top: 200px;
+        }
+        #elektron2 {
+            position: absolute;
+            left: 570px;
+            top: 250px;
+        }
+        #tekst {
+            position: absolute;
+            font-size: 20px;
+            top: 450px;
+            left: 395px;
+            width: 600px;
+        }
+        #elektronTekst {
+            width: 300px;
+        }
+        #valgtTekst {
+            top: 200px;
+            position: absolute;
+        }
+        #btnVideo {
+            position: absolute;
+            top: 550px;
+            left: 600px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <ul>
+        <li><a href="index.html">HJEM</a></li>
+        <li><a href="quiz.html">Biologi</a></li>
+        <li><a href="fysikk.html">Fysikk</a></li>
+        <li><a href="kjemi.html">Kjemi</a></li>
+    </ul>
+
+    <h1>Atommodellen og stoffer</h1>
+
+    <img id="stoffer" src="Bildefiler/stoffer.png">
+    <img id="elektron1" src="Bildefiler/elektron.png">
+    <img id="elektron2" src="Bildefiler/elektron.png">
+    <iframe src="" id="video"></iframe>
+
+    <p id="tekst">Dette er to hydrogenatomer, de ønsker begge å oppfylle det å ha 1 elektron i ytterste skall,
+    derfor flyttes det ene elektronet fra det ene hydrogenatomet til det andre.</p>
+    <button id="btnVideo">Se en video om det!</button>
+
+    <p id="elektronTekst">Velg et antall elektroner, mellom 1 og 10, så får du stoffet som har lik mengde</p>
+    <input type="number" id="inpElektroner" min="1" max="10">
+    <button id="btnElektroner">Velg</button>
+    <p id="valgtTekst"></p>
+
+
+
+    <script>
+        //Referanser til HTML elementer
+        let elektron = document.querySelector("#elektron2");
+        let inpElektroner = document.querySelector("#inpElektroner");
+        let valgtTekst = document.querySelector("#valgtTekst");
+        let btnElektroner = document.querySelector("#btnElektroner");
+        let btnVideo = document.querySelector("#btnVideo");
+        let video = document.querySelector("#video");
+
+        //Globale variabler
+        let stoffArray = ["Hydrogen", "Helium", "Litium", "Beryllium", "Bor", "Karbon", "Nitrogen", "Oksygen", "Fluor", "Neon"];
+
+        //Animasjoner
+        let elektronCSS = [//Vanlig .animate som flytter koordinatene til det ene hydrogen atomet til det andre
+            {
+                left: "570px",
+                top: "250px"
+            },
+            {
+                left: "750px",
+                top: "300px"
+            }
+        ];
+        let elektronEgenskaper = {//Egenskapene som dikterer bevegelsen og animasjonstypen
+            delay: 1000,
+            iterations: 1,
+            duration: 3000,
+            fill: "forwards",
+            easing: "ease-in-out"
+        };
+        elektron.animate(elektronCSS, elektronEgenskaper);
+
+        //Hendelseslyttere
+        btnElektroner.onclick = velgElektroner;
+        btnVideo.onclick = rullFilm;
+
+        //Funksjonsbeskrivelser
+        function velgElektroner() {
+            for (let stoff of stoffArray){//For loop som looper gjennom hele arrayet før en finner det jeg ønsker
+                let index = stoffArray.indexOf(stoff);
+                if (inpElektroner.value == index+1){
+                    valgtTekst.innerHTML = stoff + " er stoffet med " + inpElektroner.value + " elektroner";
+                }
+            }
+        }
+        function rullFilm(){
+            video.src = "https://www.youtube.com/embed/IELAg8IPISo";//Gjjør videoen synlig, linken på embeddes
+        }
+
+
+
+
+    </script>
+
+</body>
+</html>
